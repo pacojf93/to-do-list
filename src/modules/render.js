@@ -136,38 +136,43 @@ const renderFactory = function(doc,pList, storage){
     newProjectForm.addEventListener('submit',(e) => {
         e.preventDefault()
         const formData = new FormData(newProjectForm)
+
         const title = formData.get("title")
-        newProjectForm.reset()
-        pList.addProject(title)
-        storage.saveProjects()
+        pList.addProject(title)        
         renderProjects()
+                
+        newProjectForm.reset()
+        storage.saveProjects()
     })
     newToDoForm.addEventListener('submit',(e) => {
         e.preventDefault()
         const formData = new FormData(newToDoForm)
+
         const title = formData.get("title")
         const description = formData.get("description")
         const dueDateValue = formData.get("due-date")
-        const priorityValue = formData.get("priority")
-        newProjectForm.reset()
+        const priorityValue = formData.get("priority")        
 
         const projectId = getSelectedProject()
         const index = projectId.match(/\d+/g)
-        pList.projects[index[0]].addToDo(title, description, dueDateValue, priorityValue)
-        storage.saveProjects()
+        pList.projects[index[0]].addToDo(title, description, dueDateValue, priorityValue)        
         renderToDo(index[0])
+
+        newProjectForm.reset()
+        storage.saveProjects()
     }) 
     newNoteForm.addEventListener('submit',(e) => {
         e.preventDefault()
         const formData = new FormData(newNoteForm)
-        const title = formData.get("content")
-        newProjectForm.reset()
 
+        const title = formData.get("content")
         const toDoId = getSelectedToDo()
         const index = toDoId.match(/\d+/g)
         pList.projects[index[0]].toDos[index[1]].addNote(title)
-        storage.saveProjects()
         renderNotes(index[0],index[1])
+
+        newProjectForm.reset()
+        storage.saveProjects()
     })
 
     return {
