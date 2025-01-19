@@ -5,8 +5,14 @@ const projectList = (function() {
     const projects = []
     
     const delAllProjects = () => projects.forEach(() => projects.pop())
-    const addProject = (title) => projects.push(project(title))
-    const delProject = (index) => projects.splice(index, 1)
+    const addProject = (title) => {
+        projects.push(project(title))
+        storage.saveProjects()
+    }
+    const delProject = (index) => {
+        projects.splice(index, 1)
+        storage.saveProjects()
+    }
     
     return {
         projects,
@@ -21,8 +27,12 @@ function project (title) {
 
     const addToDo = (title, description, dueDate, priority) => {
         toDos.push(toDo(title, description, dueDate, priority))
+        storage.saveProjects()
     }
-    const delToDo = (index) => toDos.splice(index,1)
+    const delToDo = (index) => {
+        toDos.splice(index,1)
+        storage.saveProjects()
+    }
 
     return {
         title,
@@ -32,39 +42,64 @@ function project (title) {
     }
 }
 
-function toDo (title, description, dueDate, priority) {
+function toDo (title, description, dueDateValue, priorityValue) {
     const notes = []
     const checklist = []
-    const priorityValues = {
-        LOW: "LOW",
-        MEDIUM: "MEDIUM",
-        HIGHG: "HIGH"
-    }
+
+    let priority = priorityValue
+    let dueDate = dueDateValue
 
     const addNote = (content) => {
-        const id = 0
-        notes.push(note(content, id))
+        notes.push(note(content))
+        storage.saveProjects()
     }
 
-    const delNote = (index) => notes.splice(index, 1)
+    const delNote = (index) => {
+        notes.splice(index, 1)
+        storage.saveProjects()
+    }
+
+    const setDueDate = (value) => {
+        console.log(`setDueDate Called with value: ${value}`)
+        dueDate = value
+        storage.saveProjects()
+    }
+
+    const getDueDate = () => dueDate
+
+    const setPriority = (value) => {
+        priority = value
+        storage.saveProjects()
+    }
+    const getPriority = () => priority
+
+    const toJSON = () => ({
+            title,
+            description,
+            dueDate: getDueDate(),
+            priority: getPriority(),
+            notes,
+            checklist
+        })
 
     return {
         title,
         description,
-        dueDate,
-        priority,
+        getDueDate,
+        getPriority,
         notes,
         checklist,
         addNote,
         delNote,
-        priorityValues
+        setDueDate,
+        setPriority,
+        toJSON
     }
 }
 
-function note (content, id) {
+function note (content) {
     return {
-        content,
-        id
+        content
     }
 }
 
@@ -76,6 +111,9 @@ const render = (function(doc,pList){
     const projectContainer = doc.getElementById("projects-list")
     const toDoContainer = doc.getElementById("to-do-list")
     const notesContainer = doc.getElementById("notes-list")
+    const newProjectForm = doc.getElementById("new-project-form")
+    const newToDoForm = doc.getElementById("new-to-do-form")
+    const newNoteForm = doc.getElementById("new-note-form")
 
     const emptyContainer = (container) => () => Array
     .from(container.querySelectorAll("*"))
@@ -92,6 +130,33 @@ const render = (function(doc,pList){
     }
     const createButton = createElementWithContentAndId("button")
     const createDiv = createElementWithContentAndId("div")
+    const createInput = createElementWithContentAndId("input")
+    const createSelect = createElementWithContentAndId("select")
+    const createOption = (value) => {
+        const option = createElementWithContentAndId("option")(value,'')
+        option.value = value
+        return option
+    }
+
+    const createDatePicker = (value,id) => {
+        const input = createInput('',`date-${id}`)
+        input.type = "date"
+        input.value = value
+        return input
+    }
+
+    const prioritySelector = (value,id) => {
+        const select = createSelect('',`pr-${id}`)        
+        const low = createOption('low')
+        const med = createOption('med')
+        const high = createOption('high')
+        select.appendChild(low)
+        select.appendChild(med)
+        select.appendChild(high)
+        select.value = value
+        return select
+    }
+
     const contentAndDelButton = (content,id) => {
         const div = createDiv('', '')
         const contentDiv = createDiv(content, `show-${id}`)
@@ -109,6 +174,15 @@ const render = (function(doc,pList){
         return div
     }
 
+    const toDoRepresentation = (content, id, priorityValue, dueDateValue) => {
+        const div = contentDelButtonAndAddButton(content, id)
+        const date = createDatePicker(dueDateValue,id)
+        const priority = prioritySelector(priorityValue,id)
+        div.appendChild(date)
+        div.appendChild(priority)
+        return div
+    }    
+
     const renderProjects = () => {
         emptyProjects()
         pList.projects.map(
@@ -119,7 +193,10 @@ const render = (function(doc,pList){
     const renderToDo = (index) => {
         emptyToDo()
         pList.projects[index].toDos.map(
-            (toDo, toDoIndex) => contentDelButtonAndAddButton(toDo.title, `todo-${index}-${toDoIndex}`)
+            (toDo, toDoIndex) => {
+                console.log(`rendering todo-${index}-${toDoIndex} with priority: ${toDo.getPriority()}`)
+                return toDoRepresentation(toDo.title, `todo-${index}-${toDoIndex}`, toDo.getPriority(), toDo.getDueDate())
+            }
         ).forEach(div => toDoContainer.appendChild(div))
     }
 
@@ -130,7 +207,15 @@ const render = (function(doc,pList){
         ).forEach(div => notesContainer.appendChild(div))
     }
 
-    const showToDosInProject = (index) => {
+    const removeSelected = (container) => () => Array
+        .from(container.querySelectorAll("*"))
+        .forEach(child => child.classList.remove("selected"))
+    const removeSelectedProject = removeSelected(projectContainer)
+    const removeSelectedToDo = removeSelected(toDoContainer)
+
+    const showToDosInProject = (index,e) => {
+        removeSelectedProject()
+        e.target.classList.add("selected")
         renderToDo(index)
     }
 
@@ -139,17 +224,21 @@ const render = (function(doc,pList){
         renderProjects()
     }
 
+    //////
+
     const addToDo = (index) => {
         pList.projects[index].addToDo(
             'this is a new to do',
             'this is the description of the new to do',
             0,
-            0
+            'med'
         )
         showToDosInProject(index)
     }
 
-    const showNotesInToDo = (index) => {
+    const showNotesInToDo = (index,e) => {
+        removeSelectedToDo()
+        e.target.classList.add("selected")
         renderNotes(index[0],index[1])
     }
 
@@ -157,6 +246,17 @@ const render = (function(doc,pList){
         pList.projects[index[0]].delToDo(index[1])
         renderToDo(index[0])
     }
+
+    const setDueDate = (index,e) => {
+        pList.projects[index[0]].toDos[index[1]].setDueDate(e.target.value)
+    }
+
+    const setPriority = (index,e) => {
+        pList.projects[index[0]].toDos[index[1]].setPriority(e.target.value)
+        renderToDo(index[0])
+    }
+
+    /////
 
     const addNote = (index) => {
         pList.projects[index[0]].toDos[index[1]].addNote(
@@ -170,33 +270,82 @@ const render = (function(doc,pList){
         renderNotes(index[0],index[1])
     }
 
-    const clickHandlerWithMethods = (methods) => (e) => {
+    const genericHandlerWithMethods = (methods) => (e) => {
         let key = e.target.id.match(/\w+/)[0]
-        let index = e.target.id.match(/\d+/g)
-        console.log('',key,index)
-        if(methods.hasOwnProperty(key)) methods[key](index)         
+        let index = e.target.id.match(/\d+/g)        
+        if(methods.hasOwnProperty(key)) {
+            console.log('',key,index)
+            methods[key](index,e)
+        }         
     }
 
-    const projectClickHandler = clickHandlerWithMethods({
+    const projectClickHandler = genericHandlerWithMethods({
         show: showToDosInProject,
         del: delProject,
         add: addToDo
     })
 
-    const toDoClickHandler = clickHandlerWithMethods({
+    const toDoClickHandler = genericHandlerWithMethods({
         show: showNotesInToDo,
         del: delToDo,
         add: addNote
     })
 
-    const notesClickHandler = clickHandlerWithMethods({
+    const toDoChangeHandler = genericHandlerWithMethods({
+        date: setDueDate,
+        pr: setPriority
+    })
+
+    const notesClickHandler = genericHandlerWithMethods({
         del: delNote
     })
 
     projectContainer.addEventListener('click', projectClickHandler)
     toDoContainer.addEventListener('click', toDoClickHandler)
-    notesContainer.addEventListener('click', notesClickHandler)    
+    toDoContainer.addEventListener('change', toDoChangeHandler)
+    notesContainer.addEventListener('click', notesClickHandler)
     
+    const getSelected = (container) => () => Array.from(container.querySelectorAll("*")).find(child => child.classList.contains("selected")).id
+    const getSelectedProject = getSelected(projectContainer)
+    const getSelectedToDo = getSelected(toDoContainer)
+
+    newProjectForm.addEventListener('submit',(e) => {
+        e.preventDefault()
+        const formData = new FormData(newProjectForm)
+        const title = formData.get("title")
+        newProjectForm.reset()
+        pList.addProject(title)
+        storage.saveProjects()
+        renderProjects()
+    })
+    newToDoForm.addEventListener('submit',(e) => {
+        e.preventDefault()
+        const formData = new FormData(newToDoForm)
+        const title = formData.get("title")
+        const description = formData.get("description")
+        const dueDateValue = formData.get("due-date")
+        const priorityValue = formData.get("priority")
+        newProjectForm.reset()
+
+        const projectId = getSelectedProject()
+        const index = projectId.match(/\d+/g)
+        pList.projects[index[0]].addToDo(title, description, dueDateValue, priorityValue)
+        storage.saveProjects()
+        renderToDo(index[0])
+    }) 
+    newNoteForm.addEventListener('submit',(e) => {
+        e.preventDefault()
+        const formData = new FormData(newNoteForm)
+        const title = formData.get("content")
+        newProjectForm.reset()
+
+        const toDoId = getSelectedToDo()
+        const index = toDoId.match(/\d+/g)
+        pList.projects[index[0]].toDos[index[1]].addNote(title)
+        storage.saveProjects()
+        renderNotes(index[0],index[1])
+    })
+
     return {
         renderProjects,
         renderToDo,
@@ -206,7 +355,9 @@ const render = (function(doc,pList){
 })(document,projectList)
 
 const storage = (function (pList){
-    const saveProjects = () => localStorage.projectList = JSON.stringify(pList)
+    const saveProjects = () => {
+        localStorage.setItem('projectList', JSON.stringify(pList))
+    }
     const restorePorjects = () => {
         const savedProjects = JSON.parse(localStorage.projectList)
         
@@ -241,14 +392,14 @@ const storage = (function (pList){
         projectList.projects[i].addToDo(
             `toDo nº ${j} from project nº ${i}`,
             `this is toDo nº ${j} from project nº ${i}`,
-            0,
-            0
+            '2025-01-19',
+            'med'
         )
         for(let k = 0; k < 10; k++) {
             projectList.projects[i].toDos[j].addNote(`this is note nº ${k} from toDo nº ${j} from project nº ${i}`)
         }
     }
-} */
+}  */
 
 storage.restorePorjects()    
 //storage.saveProjects()
