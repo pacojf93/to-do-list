@@ -1,3 +1,4 @@
+import {contentAndDelButton, toDoRepresentation} from './elements'
 
 const renderFactory = function(doc,pList, storage){
     const projectContainer = doc.getElementById("projects-list")
@@ -8,71 +9,25 @@ const renderFactory = function(doc,pList, storage){
     const newNoteForm = doc.getElementById("new-note-form")
 
     const emptyContainer = (container) => () => Array
-    .from(container.querySelectorAll("*"))
-    .forEach(child => child.remove())
+        .from(container.querySelectorAll("*"))
+        .forEach(child => child.remove())
     const emptyProjects = emptyContainer(projectContainer)
     const emptyToDo = emptyContainer(toDoContainer)
     const emptyNotes = emptyContainer(notesContainer)
-
-    const createElementWithContentAndId = (selector) => (text,id) =>{
-        const element = document.createElement(selector)
-        element.textContent = text
-        element.id = id
-        return element
-    }
-    const createButton = createElementWithContentAndId("button")
-    const createDiv = createElementWithContentAndId("div")
-    const createInput = createElementWithContentAndId("input")
-    const createSelect = createElementWithContentAndId("select")
-    const createOption = (value) => {
-        const option = createElementWithContentAndId("option")(value,'')
-        option.value = value
-        return option
-    }
-
-    const createDatePicker = (value,id) => {
-        const input = createInput('',`date-${id}`)
-        input.type = "date"
-        input.value = value
-        return input
-    }
-
-    const prioritySelector = (value,id) => {
-        const select = createSelect('',`pr-${id}`)        
-        const low = createOption('low')
-        const med = createOption('med')
-        const high = createOption('high')
-        select.appendChild(low)
-        select.appendChild(med)
-        select.appendChild(high)
-        select.value = value
-        return select
-    }
-
-    const contentAndDelButton = (content,id) => {
-        const div = createDiv('', '')
-        const contentDiv = createDiv(content, `show-${id}`)
-        const delButton = createButton('del', `del-${id}`)
-
-        div.appendChild(contentDiv)
-        div.appendChild(delButton) 
-
-        return div
-    }
-
-    const toDoRepresentation = (content, id, priorityValue, dueDateValue) => {
-        const div = contentAndDelButton(content, id)
-        const date = createDatePicker(dueDateValue,id)
-        const priority = prioritySelector(priorityValue,id)
-        div.appendChild(date)
-        div.appendChild(priority)
-        return div
-    }    
 
     const selectFirst = (div, index) => {
         if(index === 0 ) div.querySelector("div").classList.add("selected")
         return div
     }
+    const removeSelected = (container) => () => Array
+        .from(container.querySelectorAll("*"))
+        .forEach(child => child.classList.remove("selected"))
+    const removeSelectedProject = removeSelected(projectContainer)
+    const removeSelectedToDo = removeSelected(toDoContainer)
+
+    const getSelected = (container) => () => Array.from(container.querySelectorAll("*")).find(child => child.classList.contains("selected")).id
+    const getSelectedProject = getSelected(projectContainer)
+    const getSelectedToDo = getSelected(toDoContainer)
 
     const renderProjects = () => {
         emptyProjects()
@@ -92,16 +47,12 @@ const renderFactory = function(doc,pList, storage){
 
     const renderNotes = (projecIndex, toDoIndex) => {
         emptyNotes()
-        pList.projects[projecIndex].toDos[toDoIndex].notes.map((note, noteIndex) => contentAndDelButton(note.content, `note-${projecIndex}-${toDoIndex}-${noteIndex}`))
+        pList.projects[projecIndex].toDos[toDoIndex].notes
+        .map((note, noteIndex) => contentAndDelButton(note.content, `note-${projecIndex}-${toDoIndex}-${noteIndex}`))
         .forEach(div => notesContainer.appendChild(div))
-    }
+    }    
 
-    const removeSelected = (container) => () => Array
-        .from(container.querySelectorAll("*"))
-        .forEach(child => child.classList.remove("selected"))
-    const removeSelectedProject = removeSelected(projectContainer)
-    const removeSelectedToDo = removeSelected(toDoContainer)
-
+    ///
     const showToDosInProject = (index,e) => {
         removeSelectedProject()
         e.target.classList.add("selected")
@@ -175,15 +126,13 @@ const renderFactory = function(doc,pList, storage){
         del: delNote
     })
 
+    //listeners
     projectContainer.addEventListener('click', projectClickHandler)
     toDoContainer.addEventListener('click', toDoClickHandler)
     toDoContainer.addEventListener('change', toDoChangeHandler)
     notesContainer.addEventListener('click', notesClickHandler)
     
-    const getSelected = (container) => () => Array.from(container.querySelectorAll("*")).find(child => child.classList.contains("selected")).id
-    const getSelectedProject = getSelected(projectContainer)
-    const getSelectedToDo = getSelected(toDoContainer)
-
+    //forms
     newProjectForm.addEventListener('submit',(e) => {
         e.preventDefault()
         const formData = new FormData(newProjectForm)
