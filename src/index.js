@@ -1,4 +1,3 @@
-//import storage from './modules/storage'
 import './styles.css'
 
 const projectList = (function() {
@@ -103,10 +102,6 @@ function note (content) {
     }
 }
 
-function delChild (father) {
-    return (index) => father.splice(index,1) 
-}
-
 const render = (function(doc,pList){
     const projectContainer = doc.getElementById("projects-list")
     const toDoContainer = doc.getElementById("to-do-list")
@@ -167,15 +162,9 @@ const render = (function(doc,pList){
 
         return div
     }
-    const contentDelButtonAndAddButton = (content, id) => {
-        const div = contentAndDelButton(content, id)
-        const addButton = createButton('add', `add-${id}`)
-        div.appendChild(addButton)
-        return div
-    }
 
     const toDoRepresentation = (content, id, priorityValue, dueDateValue) => {
-        const div = contentDelButtonAndAddButton(content, id)
+        const div = contentAndDelButton(content, id)
         const date = createDatePicker(dueDateValue,id)
         const priority = prioritySelector(priorityValue,id)
         div.appendChild(date)
@@ -183,28 +172,31 @@ const render = (function(doc,pList){
         return div
     }    
 
+    const selectFirst = (div, index) => {
+        if(index === 0 ) div.querySelector("div").classList.add("selected")
+        return div
+    }
+
     const renderProjects = () => {
         emptyProjects()
-        pList.projects.map(
-            (project,index) => contentDelButtonAndAddButton(project.title, `project-${index}`)
-        ).forEach(div => projectContainer.appendChild(div))
+        pList.projects        
+        .map((project,index) => contentAndDelButton(project.title, `project-${index}`))
+        .map(selectFirst)
+        .forEach(div => projectContainer.appendChild(div))
     }  
 
     const renderToDo = (index) => {
         emptyToDo()
-        pList.projects[index].toDos.map(
-            (toDo, toDoIndex) => {
-                console.log(`rendering todo-${index}-${toDoIndex} with priority: ${toDo.getPriority()}`)
-                return toDoRepresentation(toDo.title, `todo-${index}-${toDoIndex}`, toDo.getPriority(), toDo.getDueDate())
-            }
-        ).forEach(div => toDoContainer.appendChild(div))
+        pList.projects[index].toDos
+        .map((toDo, toDoIndex) => toDoRepresentation(toDo.title, `todo-${index}-${toDoIndex}`, toDo.getPriority(), toDo.getDueDate()))
+        .map(selectFirst)
+        .forEach(div => toDoContainer.appendChild(div))
     }
 
     const renderNotes = (projecIndex, toDoIndex) => {
         emptyNotes()
-        pList.projects[projecIndex].toDos[toDoIndex].notes.map(
-            (note, noteIndex) => contentAndDelButton(note.content, `note-${projecIndex}-${toDoIndex}-${noteIndex}`)
-        ).forEach(div => notesContainer.appendChild(div))
+        pList.projects[projecIndex].toDos[toDoIndex].notes.map((note, noteIndex) => contentAndDelButton(note.content, `note-${projecIndex}-${toDoIndex}-${noteIndex}`))
+        .forEach(div => notesContainer.appendChild(div))
     }
 
     const removeSelected = (container) => () => Array
@@ -225,16 +217,6 @@ const render = (function(doc,pList){
     }
 
     //////
-
-    const addToDo = (index) => {
-        pList.projects[index].addToDo(
-            'this is a new to do',
-            'this is the description of the new to do',
-            0,
-            'med'
-        )
-        showToDosInProject(index)
-    }
 
     const showNotesInToDo = (index,e) => {
         removeSelectedToDo()
@@ -257,14 +239,6 @@ const render = (function(doc,pList){
     }
 
     /////
-
-    const addNote = (index) => {
-        pList.projects[index[0]].toDos[index[1]].addNote(
-            'this is the content of a new note',
-        )
-        showNotesInToDo(index)
-    }    
-
     const delNote = (index) => {
         pList.projects[index[0]].toDos[index[1]].delNote(index[2])
         renderNotes(index[0],index[1])
@@ -281,14 +255,12 @@ const render = (function(doc,pList){
 
     const projectClickHandler = genericHandlerWithMethods({
         show: showToDosInProject,
-        del: delProject,
-        add: addToDo
+        del: delProject
     })
 
     const toDoClickHandler = genericHandlerWithMethods({
         show: showNotesInToDo,
-        del: delToDo,
-        add: addNote
+        del: delToDo
     })
 
     const toDoChangeHandler = genericHandlerWithMethods({
