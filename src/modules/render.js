@@ -1,8 +1,8 @@
-import {contentAndDelButton, toDoRepresentation} from './elements'
+import {contentAndDelButton, toDoRepresentation, projectContainer, toDoContainer, noteContainer} from './elements'
 
 const renderFactory = function(doc,pList, storage){
-    const projectContainer = doc.getElementById("projects-list")
-    const toDoContainer = doc.getElementById("to-do-list")
+    const projectListContainer = doc.getElementById("projects-list")
+    const toDoListContainer = doc.getElementById("to-do-list")
     const notesContainer = doc.getElementById("notes-list")
     const newProjectForm = doc.getElementById("new-project-form")
     const newToDoForm = doc.getElementById("new-to-do-form")
@@ -11,44 +11,44 @@ const renderFactory = function(doc,pList, storage){
     const emptyContainer = (container) => () => Array
         .from(container.querySelectorAll("*"))
         .forEach(child => child.remove())
-    const emptyProjects = emptyContainer(projectContainer)
-    const emptyToDo = emptyContainer(toDoContainer)
+    const emptyProjects = emptyContainer(projectListContainer)
+    const emptyToDo = emptyContainer(toDoListContainer)
     const emptyNotes = emptyContainer(notesContainer)
 
     const selectFirst = (div, index) => {
-        if(index === 0 ) div.querySelector("div").classList.add("selected")
+        if(index === 0 ) div.classList.add("selected")
         return div
     }
     const removeSelected = (container) => () => Array
         .from(container.querySelectorAll("*"))
         .forEach(child => child.classList.remove("selected"))
-    const removeSelectedProject = removeSelected(projectContainer)
-    const removeSelectedToDo = removeSelected(toDoContainer)
+    const removeSelectedProject = removeSelected(projectListContainer)
+    const removeSelectedToDo = removeSelected(toDoListContainer)
 
     const getSelected = (container) => () => Array.from(container.querySelectorAll("*")).find(child => child.classList.contains("selected")).id
-    const getSelectedProject = getSelected(projectContainer)
-    const getSelectedToDo = getSelected(toDoContainer)
+    const getSelectedProject = getSelected(projectListContainer)
+    const getSelectedToDo = getSelected(toDoListContainer)
 
     const renderProjects = () => {
         emptyProjects()
         pList.projects        
-        .map((project,index) => contentAndDelButton(project.title, `project-${index}`))
+        .map((project,index) => projectContainer(project.title, `project-${index}`))
         .map(selectFirst)
-        .forEach(div => projectContainer.appendChild(div))
+        .forEach(div => projectListContainer.appendChild(div))
     }  
 
     const renderToDo = (index) => {
         emptyToDo()
         pList.projects[index].toDos
-        .map((toDo, toDoIndex) => toDoRepresentation(toDo.title, `todo-${index}-${toDoIndex}`, toDo.getPriority(), toDo.getDueDate()))
+        .map((toDo, toDoIndex) => toDoContainer(toDo.title, `todo-${index}-${toDoIndex}`, toDo.getPriority(), toDo.getDueDate()))
         .map(selectFirst)
-        .forEach(div => toDoContainer.appendChild(div))
+        .forEach(div => toDoListContainer.appendChild(div))
     }
 
     const renderNotes = (projecIndex, toDoIndex) => {
         emptyNotes()
         pList.projects[projecIndex].toDos[toDoIndex].notes
-        .map((note, noteIndex) => contentAndDelButton(note.content, `note-${projecIndex}-${toDoIndex}-${noteIndex}`))
+        .map((note, noteIndex) => noteContainer(note.content, `note-${projecIndex}-${toDoIndex}-${noteIndex}`))
         .forEach(div => notesContainer.appendChild(div))
     }    
 
@@ -127,9 +127,9 @@ const renderFactory = function(doc,pList, storage){
     })
 
     //listeners
-    projectContainer.addEventListener('click', projectClickHandler)
-    toDoContainer.addEventListener('click', toDoClickHandler)
-    toDoContainer.addEventListener('change', toDoChangeHandler)
+    projectListContainer.addEventListener('click', projectClickHandler)
+    toDoListContainer.addEventListener('click', toDoClickHandler)
+    toDoListContainer.addEventListener('change', toDoChangeHandler)
     notesContainer.addEventListener('click', notesClickHandler)
     
     //forms

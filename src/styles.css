@@ -1,14 +1,70 @@
-#content {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 6fr 1fr;    
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
 }
 
-#new-to-do-form {
+#content {
+    height: 100vh;
+    background-color: #121212;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: 4fr 1fr;    
 }
 
 .selected {
     border: solid 2px black;
+}
+
+.container.project,
+.container.todo,
+.container.note {
+    display: grid;
+    margin: 10px;
+    padding: 10px; 
+    background-color: #282828;
+    color: white;
+    border-radius: 5px;
+    font-size: 24px;
+    
+}
+
+.container.todo
+.content {
+    display: flex;
+    justify-content: space-between;
+}
+.container.todo
+.content
+.info {
+    display: flex;
+    padding: 5px;
+    gap: 10px;
+}
+
+.button,
+.delete {
+    font-size: 24px;
+    justify-self: right;
+}
+
+#new-project-form,
+#new-to-do-form,
+#new-note-form {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: 25px;
+    gap: 5px;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #282828;
+    color: white;
+    font-size: 24px;
+}
+
+.button.submit.form {
+    grid-column-end: -1;
+    justify-self: right;
+    align-self: last baseline;
 }
