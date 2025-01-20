@@ -4,16 +4,20 @@
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
 }
 
+body {
+    background-color: #121212;
+}
+
 #content {
     height: 100vh;
-    background-color: #121212;
+    
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
     grid-template-rows: 4fr 1fr;    
 }
 
 .selected {
-    border: solid 2px black;
+    background-color:#8b8b8b;
 }
 
 .container.project,
@@ -21,7 +25,8 @@
 .container.note {
     display: grid;
     margin: 10px;
-    padding: 10px; 
+    padding: 10px;
+    gap: 10px; 
     background-color: #282828;
     color: white;
     border-radius: 5px;
@@ -42,10 +47,14 @@
     gap: 10px;
 }
 
-.button,
-.delete {
-    font-size: 24px;
+.button.delete {
+    font-size: 16px;
     justify-self: right;
+    color: white;
+    background-color: #3f3f3f;
+    border-radius: 10px;
+    padding: 1px 12px;
+    border: none;
 }
 
 #new-project-form,
@@ -67,4 +76,11 @@
     grid-column-end: -1;
     justify-self: right;
     align-self: last baseline;
+    font-size: 24px;
+    justify-self: right;
+    color: white;
+    background-color: #3f3f3f;
+    border-radius: 10px;
+    padding: 1px 12px;
+    border: none;
 }
