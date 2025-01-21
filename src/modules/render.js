@@ -1,4 +1,4 @@
-import {contentAndDelButton, toDoRepresentation, projectContainer, toDoContainer, noteContainer} from './elements'
+import {projectContainer, toDoContainer, noteContainer} from './elements'
 
 const renderFactory = function(doc,pList, storage){
     const projectListContainer = doc.getElementById("projects-list")
@@ -32,15 +32,29 @@ const renderFactory = function(doc,pList, storage){
     const renderProjects = () => {
         emptyProjects()
         pList.projects        
-        .map((project,index) => projectContainer(project.title, `project-${index}`))
-        .map(selectFirst)
-        .forEach(div => projectListContainer.appendChild(div))
+            .map((project,index) => projectContainer(project.title, `project-${index}`))
+            .map((project) => {
+                project.addEventListener("click", (e) => {
+                    removeSelectedProject()
+                    e.currentTarget.classList.add("selected")
+                })
+                return project
+            })
+            .map(selectFirst)
+            .forEach(div => projectListContainer.appendChild(div))
     }  
 
     const renderToDo = (index) => {
         emptyToDo()
         pList.projects[index].toDos
         .map((toDo, toDoIndex) => toDoContainer(toDo.title, `todo-${index}-${toDoIndex}`, toDo.getPriority(), toDo.getDueDate()))
+        .map((toDo) => {
+            toDo.addEventListener("click", (e) => {
+                removeSelectedToDo()
+                e.currentTarget.classList.add("selected")
+            })
+            return toDo
+        })
         .map(selectFirst)
         .forEach(div => toDoListContainer.appendChild(div))
     }
@@ -127,10 +141,10 @@ const renderFactory = function(doc,pList, storage){
     })
 
     //listeners
-    projectListContainer.addEventListener('click', projectClickHandler)
-    toDoListContainer.addEventListener('click', toDoClickHandler)
-    toDoListContainer.addEventListener('change', toDoChangeHandler)
-    notesContainer.addEventListener('click', notesClickHandler)
+    //projectListContainer.addEventListener('click', projectClickHandler)
+    //toDoListContainer.addEventListener('click', toDoClickHandler)
+    //toDoListContainer.addEventListener('change', toDoChangeHandler)
+    //notesContainer.addEventListener('click', notesClickHandler)
     
     //forms
     newProjectForm.addEventListener('submit',(e) => {

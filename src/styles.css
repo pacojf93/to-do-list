@@ -1,23 +1,49 @@
 * {
     margin: 0;
     padding: 0;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+
+:root {
+    /** Dark theme primary colors */
+    --clr-primary-a0: #8936c8;
+    --clr-primary-a10: #984ecf;
+    --clr-primary-a20: #a665d5;
+    --clr-primary-a30: #b47bdc;
+    --clr-primary-a40: #c291e2;
+    --clr-primary-a50: #cfa6e8;
+
+    /** Dark theme surface colors */
+    --clr-surface-a0: #121212;
+    --clr-surface-a10: #282828;
+    --clr-surface-a20: #3f3f3f;
+    --clr-surface-a30: #575757;
+    --clr-surface-a40: #717171;
+    --clr-surface-a50: #8b8b8b;
+
+    /** Dark theme tonal surface colors */
+    --clr-surface-tonal-a0: #1e1722;
+    --clr-surface-tonal-a10: #332c37;
+    --clr-surface-tonal-a20: #49434d;
+    --clr-surface-tonal-a30: #615b64;
+    --clr-surface-tonal-a40: #79747c;
+    --clr-surface-tonal-a50: #928e94;
+
 }
 
 body {
-    background-color: #121212;
+    background-color: var(--clr-surface-a0);
 }
 
 #content {
-    height: 100vh;
-    
+    height: 100vh;    
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
     grid-template-rows: 4fr 1fr;    
 }
 
-.selected {
-    background-color:#8b8b8b;
+.text {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: lighter;
 }
 
 .container.project,
@@ -27,12 +53,24 @@ body {
     margin: 10px;
     padding: 10px;
     gap: 10px; 
-    background-color: #282828;
+    background-color: var(--clr-surface-a20);
     color: white;
     border-radius: 5px;
     font-size: 24px;
     
 }
+
+.container.project:hover,
+.container.todo:hover {
+    background-color: var(--clr-surface-a40);
+    transition: background-color 0.2s;
+}
+
+.container.selected,
+.container.selected:hover {
+    background-color: var(--clr-primary-a50);
+}
+
 
 .container.todo
 .content {
@@ -48,13 +86,19 @@ body {
 }
 
 .button.delete {
+    background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	outline: inherit;
     font-size: 16px;
     justify-self: right;
     color: white;
-    background-color: #3f3f3f;
-    border-radius: 10px;
-    padding: 1px 12px;
-    border: none;
+    visibility: hidden;  
+}
+.container:hover .button.delete {
+    transition: visibility 0.5s;
+    visibility: visible;
 }
 
 #new-project-form,
@@ -79,8 +123,8 @@ body {
     font-size: 24px;
     justify-self: right;
     color: white;
-    background-color: #3f3f3f;
-    border-radius: 10px;
+    background-color: var(--clr-surface-a30);
+    border-radius: 5px;
     padding: 1px 12px;
     border: none;
 }

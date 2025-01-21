@@ -14,8 +14,8 @@ const createOption = (value) => {
     option.value = value
     return option
 }
-const createDatePicker = (value,id) => {
-    const input = createInput('',`date-${id}`)
+const createDatePicker = (value,id,classes) => {
+    const input = createInput('',`date-${id}`,classes)
     input.type = "date"
     input.value = value
     return input
@@ -31,36 +31,11 @@ const prioritySelector = (value,id) => {
     select.value = value
     return select
 }
-const contentAndDelButton = (content,id) => {
-    const div = createDiv('', `show-${id}`,['project-container'])
-    const contentDiv = createDiv(content,`cont-${id}`)
-    const delButton = createButton('del', `del-${id}`,['delete-button'])
-    div.appendChild(contentDiv)
-    div.appendChild(delButton)
-    return div
-}
-const toDoRepresentation = (content, id, priorityValue, dueDateValue) => {
-    const div = contentAndDelButton(content, id)
-    const date = createDatePicker(dueDateValue,id)
-    const priority = prioritySelector(priorityValue,id)
-    div.appendChild(date)
-    div.appendChild(priority)
-    return div
-}
-const delButtonAndContainer = (content,id) => {
-    const div = createDiv('',`project-${id}`,['container'])
-    const delButton = createButton('del', `del-${id}`,['delete-button'])
-    const contentDiv = createDiv('','',['content'])
-    contentDiv.appendChild(content)
-    div.appendChild(delButton)
-    div.appendChild(contentDiv)
-    return div
-}
 
 const projectContainer = (title,id) => {
     const div = createDiv('',`project-${id}`,['container','project'])
-    const delButton = createButton('del', `del-${id}`,['button','delete'])
-    const contentDiv = createDiv(title,`show-${id}`,['content'])
+    const delButton = createButton('del', `del-${id}`,['button','delete','text'])
+    const contentDiv = createDiv(title,`show-${id}`,['title','text'])
     div.appendChild(delButton)
     div.appendChild(contentDiv)
     return div
@@ -68,12 +43,12 @@ const projectContainer = (title,id) => {
 
 const toDoContainer = (content, id, priorityValue, dueDateValue) => {
     const div = createDiv('',`todo-${id}`,['container','todo'])
-    const delButton = createButton('del', `del-${id}`,['button','delete'])
-    const contentDiv = createDiv('',`show-${id}`,['content'])
-    const titleDiv = createDiv(content,'',['title'])
-    const infoDiv = createDiv('','',['info'])
-    const date = createDatePicker(dueDateValue,id)
-    const priority = prioritySelector(priorityValue,id)
+    const delButton = createButton('del', `del-${id}`,['button','delete','text'])
+    const contentDiv = createDiv('',`show-${id}`,['content','text'])
+    const titleDiv = createDiv(content,'',['title','text'])
+    const infoDiv = createDiv('','',['info','text'])
+    const date = createDatePicker(dueDateValue,id,['date','text'])
+    const priority = prioritySelector(priorityValue,id,['priority','text'])
 
     infoDiv.appendChild(date)
     infoDiv.appendChild(priority)
@@ -87,11 +62,11 @@ const toDoContainer = (content, id, priorityValue, dueDateValue) => {
 
 const noteContainer = (content,id) => {
     const div = createDiv('',`note-${id}`,['container','note'])
-    const delButton = createButton('del', `del-${id}`,['button','delete'])
-    const contentDiv = createDiv(content,`show-${id}`,['content'])
+    const delButton = createButton('del', `del-${id}`,['button','delete','text'])
+    const contentDiv = createDiv(content,`show-${id}`,['content','text'])
     div.appendChild(delButton)
     div.appendChild(contentDiv)
     return div
 }
 
-export {contentAndDelButton, toDoRepresentation, delButtonAndContainer, projectContainer, toDoContainer, noteContainer}
+export {projectContainer, toDoContainer, noteContainer}
