@@ -7,13 +7,15 @@ import projectListFactory from './modules/projectList'
 const projectList = projectListFactory()
 const storage = storageFactory(projectList)
 const render = renderFactory(document, projectList, storage)
-const populate = populateFactory(projectList)
 
-storage.restorePorjects()    
+if(!localStorage.getItem('projectList')) {
+    projectList.addProject('this is an empty project')
+    projectList.addProject('this is a project with a to-do')
+    projectList.projects[1].addToDo('this is a to-do whit a note', 'description', '2025-1-19', 'med')
+    projectList.projects[1].toDos[0].addNote('this is a note inside a to-do')
+} else storage.restorePorjects()   
 
 render.renderProjects()
-render.renderToDo(0)
-render.renderNotes(0,0)
 
 
 

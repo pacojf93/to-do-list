@@ -24,9 +24,11 @@ const storageFactory = function (pList){
 
         })
     }
+    const deleteProjects = () => localStorage.removeItem('projectList')
     return {
         saveProjects,
-        restorePorjects
+        restorePorjects,
+        deleteProjects
     }
 }
 

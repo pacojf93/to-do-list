@@ -34,18 +34,20 @@ const renderFactory = function(doc,pList, storage){
 
     const renderProjects = () => {
         emptyProjects()
+        emptyToDo()
+        emptyNotes()
         pList.projects        
             .map((project,index) => projectContainer(project.title, `project-${index}`))
             .map((project) => {
                 project.addEventListener("click", projectClickHandler)
                 return project
             })
-            .map(selectFirst)
             .forEach(div => projectListContainer.appendChild(div))
     }  
 
     const renderToDo = (index) => {
         emptyToDo()
+        emptyNotes()
         pList.projects[index].toDos
         .map((toDo, toDoIndex) => toDoContainer(toDo.title, `todo-${index}-${toDoIndex}`, toDo.getPriority(), toDo.getDueDate()))
         .map((toDo) => {
@@ -56,7 +58,6 @@ const renderFactory = function(doc,pList, storage){
             toDo.addEventListener("change", toDoChangeHandler)
             return toDo
         })
-        .map(selectFirst)
         .forEach(div => toDoListContainer.appendChild(div))
     }
 
@@ -83,7 +84,6 @@ const renderFactory = function(doc,pList, storage){
     }
 
     //////
-
     const showNotesInToDo = (index) => {
         renderNotes(index[0],index[1])
     }

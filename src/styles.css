@@ -37,6 +37,8 @@ body {
 #content {
     height: 100vh;    
     display: grid;
+    gap: 10px;
+    padding: 10px;
     grid-template-columns: 1fr 2fr 1fr;
     grid-template-rows: 4fr 1fr;    
 }
@@ -59,7 +61,6 @@ body {
 .form {
     background-color: var(--clr-surface-a10);
     padding: 10px;
-    margin: 10px;
     border-radius: 5px;
 }
 
