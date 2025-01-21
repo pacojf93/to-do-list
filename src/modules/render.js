@@ -7,6 +7,9 @@ const renderFactory = function(doc,pList, storage){
     const newProjectForm = doc.getElementById("new-project-form")
     const newToDoForm = doc.getElementById("new-to-do-form")
     const newNoteForm = doc.getElementById("new-note-form")
+    const newProjectButton = doc.getElementById("add-project-button")
+    const newToDoButton = doc.getElementById("add-to-do-button")
+    const newNotetButton = doc.getElementById("add-note-button")
 
     const emptyContainer = (container) => () => Array
         .from(container.querySelectorAll("*"))
@@ -34,10 +37,7 @@ const renderFactory = function(doc,pList, storage){
         pList.projects        
             .map((project,index) => projectContainer(project.title, `project-${index}`))
             .map((project) => {
-                project.addEventListener("click", (e) => {
-                    removeSelectedProject()
-                    e.currentTarget.classList.add("selected")
-                })
+                project.addEventListener("click", projectClickHandler)
                 return project
             })
             .map(selectFirst)
@@ -49,10 +49,11 @@ const renderFactory = function(doc,pList, storage){
         pList.projects[index].toDos
         .map((toDo, toDoIndex) => toDoContainer(toDo.title, `todo-${index}-${toDoIndex}`, toDo.getPriority(), toDo.getDueDate()))
         .map((toDo) => {
-            toDo.addEventListener("click", (e) => {
-                removeSelectedToDo()
-                e.currentTarget.classList.add("selected")
-            })
+            toDo.addEventListener("click", toDoClickHandler)
+            return toDo
+        })
+        .map((toDo) => {
+            toDo.addEventListener("change", toDoChangeHandler)
             return toDo
         })
         .map(selectFirst)
@@ -63,13 +64,15 @@ const renderFactory = function(doc,pList, storage){
         emptyNotes()
         pList.projects[projecIndex].toDos[toDoIndex].notes
         .map((note, noteIndex) => noteContainer(note.content, `note-${projecIndex}-${toDoIndex}-${noteIndex}`))
+        .map((note) => {note.addEventListener("click", notesClickHandler)
+            return note
+            }
+        )
         .forEach(div => notesContainer.appendChild(div))
     }    
 
     ///
-    const showToDosInProject = (index,e) => {
-        removeSelectedProject()
-        e.target.classList.add("selected")
+    const showToDosInProject = (index) => {
         renderToDo(index)
     }
 
@@ -81,9 +84,7 @@ const renderFactory = function(doc,pList, storage){
 
     //////
 
-    const showNotesInToDo = (index,e) => {
-        removeSelectedToDo()
-        e.target.classList.add("selected")
+    const showNotesInToDo = (index) => {
         renderNotes(index[0],index[1])
     }
 
@@ -114,22 +115,40 @@ const renderFactory = function(doc,pList, storage){
 
     const genericHandlerWithMethods = (methods) => (e) => {
         let key = e.target.id.match(/\w+/)[0]
-        let index = e.target.id.match(/\d+/g)        
+        let index = e.currentTarget.id.match(/\d+/g)        
         if(methods.hasOwnProperty(key)) {
             console.log('',key,index)
             methods[key](index,e)
         }         
     }
 
-    const projectClickHandler = genericHandlerWithMethods({
+    const genericHandlerWithMethodsAndItems = (methods, selectedRemover) => (e) => {
+        let key = e.target.id?e.target.id.match(/\w+/)[0]:''
+        let index = e.currentTarget.id.match(/\d+/g)
+        if(!e.currentTarget.classList.contains("selected")) {
+            selectedRemover()
+            e.currentTarget.classList.add("selected")
+            methods['show'](index)
+        }  else if(methods.hasOwnProperty(key)) {
+            console.log('',key,index)
+            methods[key](index,e)
+        }                 
+    }
+
+    const projectClickHandler = genericHandlerWithMethodsAndItems(
+    {
         show: showToDosInProject,
         del: delProject
-    })
+    },
+    removeSelectedProject
+    )
 
-    const toDoClickHandler = genericHandlerWithMethods({
+    const toDoClickHandler = genericHandlerWithMethodsAndItems({
         show: showNotesInToDo,
         del: delToDo
-    })
+    },
+    removeSelectedToDo
+    )
 
     const toDoChangeHandler = genericHandlerWithMethods({
         date: setDueDate,
@@ -139,13 +158,7 @@ const renderFactory = function(doc,pList, storage){
     const notesClickHandler = genericHandlerWithMethods({
         del: delNote
     })
-
-    //listeners
-    //projectListContainer.addEventListener('click', projectClickHandler)
-    //toDoListContainer.addEventListener('click', toDoClickHandler)
-    //toDoListContainer.addEventListener('change', toDoChangeHandler)
-    //notesContainer.addEventListener('click', notesClickHandler)
-    
+  
     //forms
     newProjectForm.addEventListener('submit',(e) => {
         e.preventDefault()
@@ -187,6 +200,18 @@ const renderFactory = function(doc,pList, storage){
 
         newProjectForm.reset()
         storage.saveProjects()
+    })
+
+    newProjectButton.addEventListener("click", () => {
+        newProjectForm.style.display = "grid"
+    })
+
+    newToDoButton.addEventListener("click", () => {
+        newToDoForm.style.display = "grid"
+    })
+
+    newNotetButton.addEventListener("click", () => {
+        newNoteForm.style.display = "grid"
     })
 
     return {

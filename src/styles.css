@@ -44,6 +44,23 @@ body {
 .text {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-weight: lighter;
+    color: white;
+    font-size: 16px;
+}
+.text.header {
+    font-size: 20px;
+}
+.text.date,
+.text.input {
+    color: black;
+}
+
+.list,
+.form {
+    background-color: var(--clr-surface-a10);
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
 }
 
 .container.project,
@@ -101,10 +118,17 @@ body {
     visibility: visible;
 }
 
+.button.add {
+    align-self: last baseline;
+    justify-self: right;
+    background-color: --clr-primary-a0;
+    color: white;
+    display: none;
+}
+
 #new-project-form,
 #new-to-do-form,
 #new-note-form {
-    display: grid;
     grid-template-columns: 1fr 2fr;
     grid-template-rows: 25px;
     gap: 5px;
@@ -114,15 +138,20 @@ body {
     background-color: #282828;
     color: white;
     font-size: 24px;
+
+    display: grid;
+    /* display: none;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    top: 50%; */
 }
 
-.button.submit.form {
+.button.submit {
     grid-column-end: -1;
     justify-self: right;
     align-self: last baseline;
-    font-size: 24px;
     justify-self: right;
-    color: white;
     background-color: var(--clr-surface-a30);
     border-radius: 5px;
     padding: 1px 12px;

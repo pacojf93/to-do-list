@@ -7,34 +7,46 @@
 </head>
 <body>
     <div id="content">
-        <div id="projects-list"></div>
-        <div id="to-do-list"></div>
-        <div id="notes-list"></div>
-        <form action="" id="new-project-form">
-            <label for="form-title" class="text">Title</label>
-            <input type="text" name="title" id="form-title" required>
-            <input type="submit" value="Add" class="button submit form project">
-        </form>
-        <form action="" id="new-to-do-form">
-            <label class="text">Title</label>
-            <input type="text" name="title" required>
-            <label class="text">Desciption</label>
-            <input type="text" name="description">
-            <label class="text">Due date</label>
-            <input type="date" name="due-date" required>
-            <label class="text">Priority</label>
-            <select name="priority" id="" required>
-                <option value="low">low</option>
-                <option value="med">med</option>
-                <option value="high">high</option>
-            </select>
-            <input type="submit" value="Add" class="button submit form todo">
-        </form>
-        <form action="" id="new-note-form">
-            <label class="text">Content</label>
-            <input type="text" name="content" required>
-            <input type="submit" value="Add" class="button submit form note">
-        </form>
+        <div id="projects-list" class="list header text">Projects</div>
+        <div id="to-do-list" class="list header text">To-do in project</div>
+        <div id="notes-list" class="list header text">Notes</div>
+        <button id="add-project-button" class="button add project text">add</button>
+        <button id="add-to-do-button" class="button add to-do text">add</button>
+        <button id="add-note-button" class="button add note text">add</button>
+        <div class="form">
+            <div class="header text">Add project</div>
+            <form action="" id="new-project-form">
+                <label for="form-title" class="text">Title</label>
+                <input type="text" name="title" id="form-title" class="text input" required>
+                <input type="submit" value="Add" class="button submit text">
+            </form>
+        </div>
+        <div class="form">
+            <div class="header text">Add to-do</div>
+            <form action="" id="new-to-do-form">
+                <label class="text">Title</label>
+                <input type="text" name="title" class="text input" required>
+                <label class="text">Desciption</label>
+                <input type="text" name="description" class="text input" > 
+                <label class="text">Due date</label>
+                <input type="date" name="due-date" class="text input" required>
+                <label class="text">Priority</label>
+                <select name="priority" id="" class="text input" required>
+                    <option value="low">low</option>
+                    <option value="med">med</option>
+                    <option value="high">high</option>
+                </select>
+                <input type="submit" value="Add" class="button submit text">
+            </form>
+        </div>
+        <div class="form">
+            <div class="header text">Add note</div>
+            <form action="" id="new-note-form">
+                <label class="text">Content</label>
+                <input type="text" name="content" class="text input" required>
+                <input type="submit" value="Add" class="button submit text">
+            </form>
+        </div>
     </div>        
 </body>
 </html>

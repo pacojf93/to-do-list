@@ -35,7 +35,7 @@ const prioritySelector = (value,id) => {
 const projectContainer = (title,id) => {
     const div = createDiv('',`project-${id}`,['container','project'])
     const delButton = createButton('del', `del-${id}`,['button','delete','text'])
-    const contentDiv = createDiv(title,`show-${id}`,['title','text'])
+    const contentDiv = createDiv(title,'',['title','text'])
     div.appendChild(delButton)
     div.appendChild(contentDiv)
     return div
@@ -44,7 +44,7 @@ const projectContainer = (title,id) => {
 const toDoContainer = (content, id, priorityValue, dueDateValue) => {
     const div = createDiv('',`todo-${id}`,['container','todo'])
     const delButton = createButton('del', `del-${id}`,['button','delete','text'])
-    const contentDiv = createDiv('',`show-${id}`,['content','text'])
+    const contentDiv = createDiv('','',['content','text'])
     const titleDiv = createDiv(content,'',['title','text'])
     const infoDiv = createDiv('','',['info','text'])
     const date = createDatePicker(dueDateValue,id,['date','text'])
